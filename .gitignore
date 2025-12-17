@@ -141,10 +141,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-test*.env
-*.env
-!sample.env
-.env.export
 .venv*
 env/
 venv/

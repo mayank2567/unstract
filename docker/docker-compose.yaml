@@ -565,6 +565,5 @@ volumes:
 
 networks:
   default:
-    # NOTE:
-    # Any changes need to be reflected in proxy service too.
     name: unstract-network
+    driver: bridge

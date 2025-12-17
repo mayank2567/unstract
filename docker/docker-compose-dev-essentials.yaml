@@ -41,6 +41,11 @@ services:
     env_file:
       - ./essentials.env
     command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     labels:
       - traefik.enable=true
       - traefik.http.routers.minio.rule=Host(`minio.unstract.localhost`)
@@ -49,7 +54,8 @@ services:
   minio-bootstrap:
     image: minio/mc
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
     entrypoint: >
       /bin/sh -c "
       sleep 5;
@@ -72,10 +78,14 @@ services:
     #   This is required because Traefik by default tries available networks in a
     #   round-robin fashion. With multiple providers, services can be on multiple
     #   networks causing 504 Gateway Timeout.
-    command: --api.insecure=true
-      --accesslog=true --log.level=INFO
-      --providers.docker=true --providers.docker.network=coolify
-      --providers.file.filename=/proxy_overrides.yaml --providers.file.watch=true
+    command: 
+      - "--api.insecure=true"
+      - "--accesslog=true"
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false" # Security best practice
+      - "--providers.file.filename=/proxy_overrides.yaml"
+      - "--providers.file.watch=true"
     # ports:
     #   # The HTTP port
     #   - "80:80"
@@ -155,3 +165,8 @@ volumes:
   redis_data:
   prompt_studio_data:
   rabbitmq_data:
+
+networks:
+  default:
+    name: unstract-network
+    driver: bridge

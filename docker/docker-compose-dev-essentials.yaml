@@ -74,13 +74,13 @@ services:
     #   networks causing 504 Gateway Timeout.
     command: --api.insecure=true
       --accesslog=true --log.level=INFO
-      --providers.docker=true --providers.docker.network=unstract-network
+      --providers.docker=true --providers.docker.network=coolify
       --providers.file.filename=/proxy_overrides.yaml --providers.file.watch=true
-    ports:
-      # The HTTP port
-      - "80:80"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
+    # ports:
+    #   # The HTTP port
+    #   - "80:80"
+    #   # The Web UI (enabled by --api.insecure=true)
+    #   - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
